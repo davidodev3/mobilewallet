@@ -49,60 +49,64 @@ object Home
 
 
 class MainActivity : ComponentActivity() {
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      enableEdgeToEdge()
-      val prefs = getSharedPreferences("did", Context.MODE_PRIVATE)
-      setContent {
-         MyHost()
-      }
-   }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    val prefs = getSharedPreferences("did", Context.MODE_PRIVATE)
+    setContent {
+      /*Column {
+        Text("did: ${prefs.getString("did", "")}")
+        Text("key: ${prefs.getString("key", "")}")
+      }*/
+      MyHost()
+    }
+  }
 }
 
 @Composable
 fun MyHost(
-   modifier: Modifier = Modifier,
-   navController: NavHostController = rememberNavController()
+  modifier: Modifier = Modifier,
+  navController: NavHostController = rememberNavController()
 ) {
-   NavHost(modifier = modifier, navController = navController, startDestination = Home) {
-      composable<Home> {
-         MobileWalletTheme {
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-               Column() {
-                  Heading(
-                     modifier = Modifier.padding(innerPadding)
-                  )
-                  CredentialCard("University Degree") { navController.navigate(Credential("universityDegree")) }
-               }
-            }
-         }
+  NavHost(modifier = modifier, navController = navController, startDestination = Home) {
+    composable<Home> {
+      MobileWalletTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+          Column() {
+            Heading(
+              modifier = Modifier.padding(innerPadding)
+            )
+            CredentialCard("University Degree") { navController.navigate(Credential("universityDegree")) }
+          }
+        }
       }
-      composable<Credential> { bsEntry ->
-         val credential: Credential = bsEntry.toRoute()
-         CredentialScreen(credential.type)
-      }
-   }
+    }
+    composable<Credential> { bsEntry ->
+      val credential: Credential = bsEntry.toRoute()
+      CredentialScreen(credential.type)
+    }
+  }
 }
 
 @Composable
 fun Heading(modifier: Modifier = Modifier) {
-   Text(
-      text = "Issue",
-      modifier = modifier,
-      fontSize = TextUnit(38.0f, TextUnitType.Sp)
-   )
+  Text(
+    text = "Issue",
+    modifier = modifier,
+    fontSize = TextUnit(38.0f, TextUnitType.Sp)
+  )
 }
 
 @Composable
 fun CredentialCard(credential: String, onClick: () -> Unit) {
-   Card(
-      colors = CardDefaults.cardColors(),
-      modifier = Modifier
-         .height(100.0.dp)
-         .padding(8.dp)
-         .fillMaxWidth()
-         .clickable {onClick()}
-   ) {
-      Text(credential)
-   }
+  Card(
+    colors = CardDefaults.cardColors(),
+    modifier = Modifier
+      .height(100.0.dp)
+      .padding(8.dp)
+      .fillMaxWidth()
+      .clickable {onClick()}
+  ) {
+    Text(credential)
+  }
 }

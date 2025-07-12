@@ -20,6 +20,7 @@ navigationUiKtx = "2.6.0"
 waltidVerifiableCredentials = "0.14.0"
 navigationComposeAndroid = "2.9.1"
 navigationRuntimeAndroid = "2.9.1"
+registryProvider = "1.0.0-alpha01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +63,7 @@ waltid-did = { module = "id.walt.did:waltid-did", version.ref = "waltidVerifiabl
 waltid-verifiable-credentials = { module = "id.walt.credentials:waltid-w3c-credentials", version.ref = "waltidVerifiableCredentials" }
 androidx-navigation-compose-android = { group = "androidx.navigation", name = "navigation-compose-android", version.ref = "navigationComposeAndroid" }
 androidx-navigation-runtime-android = { group = "androidx.navigation", name = "navigation-runtime-android", version.ref = "navigationRuntimeAndroid" }
+androidx-registry-provider = { group = "androidx.credentials.registry", name = "registry-provider", version.ref = "registryProvider" }
 
 
 
