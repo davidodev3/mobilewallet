@@ -187,4 +187,5 @@ fun readBinary(filename: String, application: Application) : ByteArray {
   input.read(binary)
   input.close()
   return binary
+
 }
