@@ -2,6 +2,7 @@ package com.example.mobileissuer
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -124,6 +125,7 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
               content = credentialModel.generateCredential(
                 credential
               )
+              Log.i("AAAAAA", content)
             } finally {
               loading = false
             }

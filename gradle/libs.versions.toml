@@ -17,15 +17,18 @@ composeBom = "2025.06.01"
 navigationCompose = "2.9.1"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
+registryDigitalcredentialsPreview = "1.0.0-alpha01"
 waltidVerifiableCredentials = "0.14.0"
 navigationComposeAndroid = "2.9.1"
 navigationRuntimeAndroid = "2.9.1"
-registryProvider = "1.0.0-alpha01"
+registryDigitalCredentials = "1.0.0-alpha01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-credentials-provider-registry-play-services = { module = "androidx.credentials:credentials-provider-registry-play-services" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-registry-digitalcredentials-preview = { module = "androidx.credentials.registry:registry-digitalcredentials-preview", version.ref = "registryDigitalcredentialsPreview" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -63,7 +66,8 @@ waltid-did = { module = "id.walt.did:waltid-did", version.ref = "waltidVerifiabl
 waltid-verifiable-credentials = { module = "id.walt.credentials:waltid-w3c-credentials", version.ref = "waltidVerifiableCredentials" }
 androidx-navigation-compose-android = { group = "androidx.navigation", name = "navigation-compose-android", version.ref = "navigationComposeAndroid" }
 androidx-navigation-runtime-android = { group = "androidx.navigation", name = "navigation-runtime-android", version.ref = "navigationRuntimeAndroid" }
-androidx-registry-provider = { group = "androidx.credentials.registry", name = "registry-provider", version.ref = "registryProvider" }
+androidx-registry-provider = { module = "androidx.credentials.registry:registry-provider", version.ref = "registryDigitalCredentials" }
+androidx-registry-provider-play-services = { module = "androidx.credentials.registry:registry-provider-play-services", version.ref = "registryDigitalCredentials" }
 
 
 

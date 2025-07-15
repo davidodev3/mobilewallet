@@ -81,6 +81,7 @@ fun MyHost(
         }
       }
     }
+
     composable<Credential> { bsEntry ->
       val credential: Credential = bsEntry.toRoute()
       CredentialScreen(credential.type)
@@ -109,4 +110,11 @@ fun CredentialCard(credential: String, onClick: () -> Unit) {
   ) {
     Text(credential)
   }
+
+
+
+
+
+
+
 }
