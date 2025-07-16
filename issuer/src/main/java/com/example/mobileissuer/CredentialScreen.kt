@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,8 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -41,7 +40,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CredentialModel(application: Application) : AndroidViewModel(application) {
 
 
 
@@ -50,10 +48,15 @@ class CredentialModel(application: Application) : AndroidViewModel(application) 
 
 
 
-  /*This is not exposed as state flow because realistically speaking
+class CredentialModel(context: Application) : AndroidViewModel(context) {
+
+
+
+
+  /*This is not exposed as state flow because realistically speaking at worst
   this gets updated once per application start. Also any change does not really impact the UI.
   So in short no preference listener.*/
-  val prefs = application.getSharedPreferences("did", Context.MODE_PRIVATE)
+  private val prefs = context.getSharedPreferences("did", Context.MODE_PRIVATE)
 
   //Mapping of data to be passed to the generated credential
   private val _mapping = MutableStateFlow(mutableStateMapOf<String, String>())
@@ -125,7 +128,6 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
               content = credentialModel.generateCredential(
                 credential
               )
-              Log.i("AAAAAA", content)
             } finally {
               loading = false
             }
@@ -135,6 +137,17 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
           if (loading) {
             CircularProgressIndicator()
           } else {
+
+
+
+
+
+
+
+
+
+
+
             Text("Generate")
           }
         }
@@ -180,11 +193,15 @@ fun CredentialDialog(content: String, onDismissRequest: () -> Unit) {
     dismissButton = {
       TextButton(onClick = onDismissRequest) { Text("Dismiss") }
     },
+
     confirmButton = {
+      val clipboardManager = LocalClipboardManager.current
       TextButton(onClick = {
+        clipboardManager.setText(AnnotatedString(content))
         onDismissRequest()
       }) { Text("Confirm") }
     },
+
     text = {
       SelectionContainer {
         Text(content, modifier = Modifier.verticalScroll(rememberScrollState()))

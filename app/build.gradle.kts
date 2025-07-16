@@ -1,8 +1,8 @@
 plugins {
   alias(libs.plugins.android.application)
-  alias(libs.plugins.kotlin.android)
-  alias(libs.plugins.kotlin.compose)
-  kotlin("plugin.serialization") version "2.2.0"
+  alias(libs.plugins.androidk)
+  alias(libs.plugins.compose)
+  alias(libs.plugins.serialization)
 }
 
 android {
@@ -39,6 +39,18 @@ android {
     viewBinding = true
     compose = true
   }
+
+
+
+
+
+
+
+
+  packaging {
+    resources.excludes.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+  }
+
 }
 
 dependencies {
@@ -61,8 +73,11 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.registry.provider)
-  testImplementation(libs.junit)
 
+  testImplementation(libs.junit)
+  implementation(libs.waltid.verifiable.credentials)
+  implementation(libs.waltid.crypto)
+  implementation(libs.waltid.did)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -72,4 +87,5 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.androidx.registry.provider)
   implementation(libs.androidx.registry.provider.play.services)
+  implementation(libs.kotlinx.coroutines.core)
 }

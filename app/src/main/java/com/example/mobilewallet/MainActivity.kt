@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mobilewallet.ui.theme.MobileWalletTheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -51,11 +52,20 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
 class Wallet(val name: String)
 @Serializable
 object Home
+@Serializable
+object Profile
+@Serializable
+
+class Credential(val credential: String)
+
+@Serializable
+object Login
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,19 +81,31 @@ class MainActivity : ComponentActivity() {
 fun MyHost(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()) {
   NavHost(modifier = modifier, navController = navController, startDestination = Home) {
     composable<Home> {
-      MainScreen {name ->
-        navController.navigate(Wallet(name))
-      }
+      MainScreen (onClick = {name ->
+        navController.navigate(Wallet(name))},
+        onProfileClick = {navController.navigate(Profile)}
+      )
     }
     composable<Wallet> { bsEntry ->
       val wallet: Wallet = bsEntry.toRoute()
-      WalletScreen(wallet.name)
+      WalletScreen(wallet.name, onClick = {jwt ->
+        navController.navigate(Credential(jwt))
+      })
     }
+    composable<Profile> {
+      ProfileScreen()
+    }
+    composable<Credential> {bsEntry ->
+      val credential: Credential = bsEntry.toRoute()
+      CredentialScreen(credential.credential)
+    }
+    composable<Login> {}
   }
+
 }
 
 @Composable
-fun MainScreen(onWalletClick: (String) -> Unit) {
+fun MainScreen(onClick: (String) -> Unit, onProfileClick: () -> Unit) {
   MobileWalletTheme {
     var showDialog by remember { mutableStateOf(false) }
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -100,7 +122,13 @@ fun MainScreen(onWalletClick: (String) -> Unit) {
           name = "Android", modifier = Modifier.padding(innerPadding)
         )
         Subtitle()
-        ListColumn(onClick = onWalletClick)
+
+        ListColumn(onClick = onClick)
+        IconButton(onClick = onProfileClick) {
+          Icon(
+            Icons.Filled.Person, "Profile"
+          )
+        }
       }
     }
   }
@@ -108,6 +136,17 @@ fun MainScreen(onWalletClick: (String) -> Unit) {
 
 class WalletModel(application: Application) : AndroidViewModel(application), SharedPreferences.OnSharedPreferenceChangeListener {
   private val _walletPrefs = (application.getSharedPreferences("wallets", Context.MODE_PRIVATE))
+
+
+
+
+
+
+
+
+
+
+
 
   private val _wallets = MutableStateFlow(_walletPrefs.all.keys.toMutableList())
   val wallets = _wallets.asStateFlow()
@@ -122,6 +161,7 @@ class WalletModel(application: Application) : AndroidViewModel(application), Sha
 
   fun addWallet(name: String) {
     with(_walletPrefs.edit()) {
+
       putStringSet(name, mutableSetOf())
       commit()
     }
@@ -131,6 +171,7 @@ class WalletModel(application: Application) : AndroidViewModel(application), Sha
     with(_walletPrefs.edit()) {
       remove(name)
       commit()
+
     }
   }
 
@@ -160,6 +201,7 @@ fun AddButton(onClick: () -> Unit) {
       Icons.Filled.Add, "Add new wallet or digital credential"
     )
   }
+
 }
 
 @Composable
@@ -199,6 +241,13 @@ fun ListColumn(walletModel: WalletModel = viewModel(), onClick: (String) -> Unit
   }
 }
 
+
+
+
+
+
+
+
 @Composable
 fun AddWalletDialog(walletModel: WalletModel = viewModel(), onDismissRequest: () -> Unit) {
   var value by remember { mutableStateOf("") }
@@ -212,6 +261,7 @@ fun AddWalletDialog(walletModel: WalletModel = viewModel(), onDismissRequest: ()
       TextButton(onClick = {
         walletModel.addWallet(value)
         onDismissRequest()
+
       }) { Text("Confirm") }
     },
     text = {

@@ -3,7 +3,6 @@ package com.example.mobilewallet
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +46,7 @@ import androidx.credentials.registry.provider.RegistryManager
 
 
 
+
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -59,21 +59,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
+
+
 import java.util.Base64
 
-
-
-
-
-
 @Composable
-fun WalletScreen(name: String) {
+fun WalletScreen(name: String, onClick: (String) -> Unit) {
   val context = LocalContext.current
   var showDialog by remember { mutableStateOf(false) }
   val dom : DocumentModel = viewModel(
     factory = DocumentModelFactory(
+
       context.applicationContext as Application, name
     )
   )
@@ -88,7 +87,7 @@ fun WalletScreen(name: String) {
       }
       Column(modifier = Modifier.padding(innerPadding)) {
         WalletName(name)
-        DocumentList(dom)
+        DocumentList(dom, onClick)
       }
     }
   }
@@ -114,10 +113,10 @@ class DocumentModel(val name: String, private val application: Application) : An
         ?: mutableListOf<String>()
   }
 
-  fun removeDocument(id: String) {
+  fun removeDocument(jwt: String) {
     val doc = _documents.value.toMutableSet()
     //Remove the element from the new list
-    doc.remove(id)
+    doc.remove(jwt)
     with(_walletPrefs.edit()) {
       //Update preferences with new list
       putStringSet(name, doc)
@@ -158,18 +157,13 @@ class DocumentModel(val name: String, private val application: Application) : An
         ) {})
       }
     } finally {
-      /*When the request has completed we save the credential in a relational db fashion with SharedPreferences.
+      /*The JWT is unique for each issued credential so we can directly save that.
       SQLite was definitely an option to store the actual JSON data (decoded from the issued JWT),
       but probably we need to work with JSON/JWT more so using SharedPreferences to store strings seems more efficient.*/
       val doc = _documents.value.toMutableSet()
-      doc.add(documentId)
+      doc.add(jwt)
       with (_walletPrefs.edit()) {
         putStringSet(name, doc)
-        commit()
-      }
-      val docPrefs = application.getSharedPreferences("documents", Context.MODE_PRIVATE)
-      with (docPrefs.edit()) {
-        putString(documentId, jwt)
         commit()
       }
     }
@@ -190,15 +184,15 @@ class DocumentModelFactory(private val application: Application, private val nam
 }
 
 @Composable
-fun DocumentList(documentModel: DocumentModel) {
+fun DocumentList(documentModel: DocumentModel, onClick: (String) -> Unit) {
 
   val documents by documentModel.documents.collectAsStateWithLifecycle()
   if (documents.isEmpty()) {
     Text("No credentials are stored in this wallet yet.")
   } else {
     LazyColumn {
-      items(documents) { document ->
-        CredentialCard(document, { }) {documentModel.removeDocument("")}
+      items(documents) { jwt ->
+        CredentialCard(jwt, onClick) {documentModel.removeDocument(jwt)}
       }
     }
 
@@ -207,7 +201,9 @@ fun DocumentList(documentModel: DocumentModel) {
 
 @Composable
 fun WalletName(name: String) {
-  Text(name, fontSize = TextUnit(38.0f,           TextUnitType.Sp))
+  Text(name, fontSize = TextUnit(38.0f,
+    TextUnitType.Sp)
+  )
 }
 
 @Composable
@@ -233,7 +229,7 @@ fun AddDocumentDialog(documentModel: DocumentModel, onDismissRequest: () -> Unit
 }
 
 @Composable
-fun CredentialCard(name: String, onClick: (String) -> Unit, delete: () -> Unit) {
+fun CredentialCard(jwt: String, onClick: (String) -> Unit, delete: () -> Unit) {
   Card(
     modifier = Modifier
       .fillMaxWidth()
@@ -250,11 +246,13 @@ fun CredentialCard(name: String, onClick: (String) -> Unit, delete: () -> Unit) 
 
       .padding(16.00.dp)
       .height(100.0.dp)
-      .clickable {onClick(name)}
+      .clickable {onClick(jwt)}
 
   ) {
     Row() {
-      Text(name, Modifier.padding(16.00.dp))
+      val payload = tokenToPayload(jwt).jsonObject
+
+      Text(((payload["vc"] as JsonObject)["type"] as JsonArray)[1].toString(), Modifier.padding(16.00.dp))
       IconButton(onClick = delete) {
         Icon(
           Icons.Filled.Delete, "Delete selected credential"
@@ -271,8 +269,6 @@ fun readBinary(filename: String, application: Application) : ByteArray {
   input.read(binary)
   input.close()
   return binary
-
-
 
 }
 
