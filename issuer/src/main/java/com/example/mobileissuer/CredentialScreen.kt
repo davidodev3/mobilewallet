@@ -170,7 +170,7 @@ suspend fun generateCredential(
       addType("UniversityDegree")
       issuerDid = issuer
       validFromNow()
-      subjectDid = "did:example:aaaaaa" //Hardcoded for now
+      subjectDid = "did:key:z6Mkf54p69N789ZrkPs9N5cnb2PiAzerEedcKWxgS3Wm4e6K" //Hardcoded for now
       useCredentialSubject(map.toJsonObject())
     }.buildW3C()
   } else {

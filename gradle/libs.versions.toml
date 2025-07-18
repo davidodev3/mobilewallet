@@ -89,5 +89,4 @@ compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization"}
 androidk = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
-
 android-application = { id = "com.android.application", version.ref = "agp" }

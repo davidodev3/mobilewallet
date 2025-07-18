@@ -32,6 +32,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
@@ -41,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
@@ -49,8 +51,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -122,7 +126,7 @@ fun MainScreen(onClick: (String) -> Unit, onProfileClick: () -> Unit) {
           name = "Android", modifier = Modifier.padding(innerPadding)
         )
         Subtitle()
-
+        Regeneration()
         ListColumn(onClick = onClick)
         IconButton(onClick = onProfileClick) {
           Icon(
@@ -269,4 +273,30 @@ fun AddWalletDialog(walletModel: WalletModel = viewModel(), onDismissRequest: ()
       )
     },
   )
+}
+
+//TODO: Remove
+class ButtonModel(application: Application) : AndroidViewModel(application) {
+  private val _preferences = application.getSharedPreferences("did", Context.MODE_PRIVATE)
+
+  fun regenerate() {
+    viewModelScope.launch {
+      val keydid = async {
+        generateKeyDid()
+      }
+      with(_preferences.edit()) {
+        val resolved = keydid.await()
+        putString("did", resolved.second)
+        putString("key", resolved.first.exportJWK())
+        apply()
+      }
+    }
+  }
+}
+
+@Composable
+fun Regeneration(buttonModel: ButtonModel = viewModel()) {
+  ElevatedButton(onClick = {
+    buttonModel.regenerate()
+  }) {Text("Regenerate")}
 }
