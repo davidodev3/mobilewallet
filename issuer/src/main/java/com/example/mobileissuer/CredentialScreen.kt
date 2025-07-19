@@ -121,6 +121,7 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
       Column(modifier = Modifier.padding(innerPadding)) {
         Text("University Degree")
         fields()
+
         ElevatedButton(onClick = {
           coroutineScope.launch {
             loading = true
@@ -130,6 +131,7 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
               )
             } finally {
               loading = false
+
             }
           }
           showDialog = true
@@ -149,6 +151,7 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
 
 
             Text("Generate")
+
           }
         }
       }
@@ -158,6 +161,7 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
 
 suspend fun generateCredential(
   type: String,
+
   map: Map<String, String>,
   issuer: String,
   key: String
@@ -167,22 +171,26 @@ suspend fun generateCredential(
   if (type == "universityDegree") {
     credential = CredentialBuilder().apply {
       addContext("https://www.w3.org/2018/credentials/examples/v1")
+
       addType("UniversityDegree")
       issuerDid = issuer
       validFromNow()
-      subjectDid = "did:key:z6Mkf54p69N789ZrkPs9N5cnb2PiAzerEedcKWxgS3Wm4e6K" //Hardcoded for now
+      subjectDid = "did:key:z6MkmLUYGGZXTCAqq7PtavWYTD93B8mw3dkjL5e1PSqQRPTr" //TODO Hardcoded
       useCredentialSubject(map.toJsonObject())
     }.buildW3C()
   } else {
     credential = W3CVC(mutableMapOf())
   }
+
   val signed = credential.signJws(
     JWKKey.importJWK(key).getOrNull()!!,
     issuer,
-    subjectDid = "did:example:aaaaaa"
+    subjectDid = "did:key:z6MkmLUYGGZXTCAqq7PtavWYTD93B8mw3dkjL5e1PSqQRPTr" //TODO
   )
   return signed
 }
+
+
 
 @Composable
 fun CredentialDialog(content: String, onDismissRequest: () -> Unit) {
@@ -201,6 +209,12 @@ fun CredentialDialog(content: String, onDismissRequest: () -> Unit) {
         onDismissRequest()
       }) { Text("Confirm") }
     },
+
+
+
+
+
+
 
     text = {
       SelectionContainer {

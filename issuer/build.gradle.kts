@@ -72,6 +72,7 @@ dependencies {
   implementation(      libs.androidx.navigation.runtime.android)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
+
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.waltid.verifiable.credentials)
   implementation(libs.waltid.crypto)

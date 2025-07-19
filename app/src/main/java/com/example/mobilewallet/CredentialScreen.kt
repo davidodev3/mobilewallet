@@ -71,6 +71,7 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
 
   //TODO: dialog
   MobileWalletTheme {
+
     Scaffold { innerPadding ->
       if (showDialog) {
         CredentialDialog(content) {showDialog = false}
@@ -100,6 +101,7 @@ fun CredentialScreen(credential: String, credentialModel: CredentialModel = view
 }
 
 @Composable
+
 fun CredentialDialog(content: String, onDismissRequest: () -> Unit) {
   AlertDialog(
     onDismissRequest = onDismissRequest,
@@ -108,10 +110,18 @@ fun CredentialDialog(content: String, onDismissRequest: () -> Unit) {
       TextButton(onClick = onDismissRequest) { Text("Dismiss") }
     },
 
+
+
+
+
+
+
+
     confirmButton = {
       val clipboardManager = LocalClipboardManager.current
       TextButton(onClick = {
         clipboardManager.setText(AnnotatedString(content))
+
         onDismissRequest()
       }) { Text("Confirm") }
     },
@@ -121,5 +131,6 @@ fun CredentialDialog(content: String, onDismissRequest: () -> Unit) {
         Text(content, modifier = Modifier.verticalScroll(rememberScrollState()))
       }
     },
+
     )
 }
